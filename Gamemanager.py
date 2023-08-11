@@ -5,3 +5,4 @@ class GameManager:
     def __init__(self) -> None:
         
         self.gametime = 0
+        # self.difficulty_factor = 1

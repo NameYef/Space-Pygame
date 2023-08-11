@@ -7,7 +7,7 @@ from Gamemanager import width, height
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, image, hit_image, scale, hp, atk, speed, lspeed, shoot_speed):
+    def __init__(self, image, hit_image, scale, hp, atk, speed, lspeed, shoot_speed, difficulty_factor : dict):
         super().__init__()
         self.x = 0
         self.y = 0
@@ -42,11 +42,13 @@ class Enemy(pygame.sprite.Sprite):
 
         
         self.speed = speed 
-        self.lspeed = lspeed 
-        self.shoot_speed = shoot_speed
-        self.hp = hp
-        self.atk = atk
-
+        self.lspeed = lspeed * difficulty_factor["lspeed"]
+        self.shoot_speed = shoot_speed * difficulty_factor["shoot_speed"]
+        self.hp = hp * difficulty_factor["hp"]
+        self.atk = atk * difficulty_factor["atk"]
+        self.max_shoot_speed = 1500
+        if self.shoot_speed <= self.max_shoot_speed:
+            self.shoot_speed = self.max_shoot_speed
         self.hit_by_explosion = False
         self.damaged = False
         self.hit_by_laser = 0
@@ -150,20 +152,20 @@ class Enemy(pygame.sprite.Sprite):
         # print(self.elasers.sprites())
 
 class Fighter(Enemy):
-    def __init__(self):
-        super().__init__("textures/enemy_basic.png", "textures/enemy_basic_hit.png", (36,33), 2, 1, 0.03, 0.5, 3000)
-
+    def __init__(self, difficulty_factor):
+        super().__init__("textures/enemy_basic.png", "textures/enemy_basic_hit.png", (36,33), 2, 1, 0.03, 0.5, 3000, difficulty_factor)
 
 class Kamikaze(Enemy):
-    def __init__(self):
-        super().__init__("textures/enemy1.png", "textures/enemy1_hit.png", (36,33), 3, 10, 0.5, 0, 0)
+    def __init__(self, difficulty_factor):
+        super().__init__("textures/enemy1.png", "textures/enemy1_hit.png", (36,33), 3, 10, 0.5, 0, 0, difficulty_factor)
+        self.speed *= difficulty_factor["speed"]
 
     def shoot(self, elasers, gametime):
         pass
     
 class Elite(Enemy):
-    def __init__(self):
-        super().__init__("textures/enemy_elite.png", "textures/enemy_elite_hit.png", (45,49), 5, 2, 0.05, 0.65, 3000)
+    def __init__(self, difficulty_factor):
+        super().__init__("textures/enemy_elite.png", "textures/enemy_elite_hit.png", (45,49), 5, 2, 0.05, 0.65, 3000, difficulty_factor)
         self.limage = pygame.image.load("textures/elaser_elite.png").convert_alpha()
     def shoot(self, elasers, gametime):
         if gametime - self.last_shoot > self.shoot_speed:
@@ -188,8 +190,8 @@ class Elite(Enemy):
 
 
 class EnemyBig(Enemy):
-    def __init__(self):
-        super().__init__("textures/enemy_big.png","textures/enemy_big_hit.png",(105,129), 150, 3, 0.01, 0.5, 3500)
+    def __init__(self, difficulty_factor):
+        super().__init__("textures/enemy_big.png","textures/enemy_big_hit.png",(105,129), 150, 3, 0.01, 0.5, 3500, difficulty_factor)
         self.limage = pygame.image.load("textures/elaser_big.png").convert_alpha()
 
     def shoot(self, elasers, gametime):

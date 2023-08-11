@@ -15,6 +15,7 @@ class Main():
         self.width = width
         self.height = height
         self.gametime = 0
+        self.time_over = 0
         self.dt = 0
         self.target_fps = 550
         self.player = Player((self.width/ 2, self.height / 2))
@@ -27,7 +28,7 @@ class Main():
         self.item_last_spawn = 0
         self.powerup_last_spawn = 0
         self.powerup_interval = random.randint(15,40)
-        self.iframe = 600
+        self.iframe = 800
         self.player_get_hit_time = 0
         self.difficulty = "EASY"
         self.wave = "WAVE 1"
@@ -35,7 +36,8 @@ class Main():
         self.screenshake = False
         self.shake_timer = 0
         self.offset = [0,0]
-
+        self.difficulty_factor = {"spawn": 1, "speed": 1, "lspeed": 1, "shoot_speed": 1, "hp": 1, "atk": 1}
+        self.difficulty_up = 0
         self.player_oof = pygame.mixer.Sound("sounds/hit_sound.mp3")
 
     def update(self):
@@ -52,54 +54,65 @@ class Main():
         self.screen_shake()
 
     def generate_enemy(self):
+    
         
         
         if self.difficulty == "EASY":
+            if self.wave == "ENDLESS":
+                if self.gametime - self.difficulty_up >= 9000:
+                    self.difficulty_up = self.gametime
+                    self.difficulty_factor["speed"] += 0.005
+                    self.difficulty_factor["lspeed"] += 0.0025
+                    self.difficulty_factor["shoot_speed"] -= 0.015
+                    self.difficulty_factor["hp"] += 0.02
+                    self.difficulty_factor["atk"] += 0.02
+                    self.difficulty_factor["spawn"] += 0.05
+                    # print(self.difficulty_factor) 
             if self.gametime / 1000 < 20:
                 if self.gametime - self.enemy_last_spawn > 5000:
                     self.enemy_last_spawn = self.gametime
                     for _ in range(3):
-                        self.enemies.add(Fighter())
+                        self.enemies.add(Fighter(self.difficulty_factor))
                     self.wave = "WAVE 1"
                     
             elif 20 <= self.gametime / 1000 < 40:
                 if self.gametime - self.enemy_last_spawn > 5000:
                     self.enemy_last_spawn = self.gametime
                     for _ in range(5):
-                        self.enemies.add(Fighter())
+                        self.enemies.add(Fighter(self.difficulty_factor))
                     self.wave = "WAVE 2"
 
             elif 40 <= self.gametime / 1000 < 60:
                 if self.gametime - self.enemy_last_spawn > 6000:
                     self.enemy_last_spawn = self.gametime
                     for _ in range(4):
-                        self.enemies.add(Fighter())
+                        self.enemies.add(Fighter(self.difficulty_factor))
                     for _ in range(2):
-                        self.enemies.add(Elite())
+                        self.enemies.add(Elite(self.difficulty_factor))
                     self.wave = "WAVE 3"
             elif 60 <= self.gametime / 1000 < 80:
                 if self.gametime - self.enemy_last_spawn > 6000:
                     self.enemy_last_spawn = self.gametime
                     for _ in range(5):
-                        self.enemies.add(Fighter())
+                        self.enemies.add(Fighter(self.difficulty_factor))
                     for _ in range(2):
-                        self.enemies.add(Elite())
-                    self.enemies.add(Kamikaze())
+                        self.enemies.add(Elite(self.difficulty_factor))
+                    self.enemies.add(Kamikaze(self.difficulty_factor))
                     self.wave = "WAVE 4"
             elif 80 <= self.gametime / 1000 < 100:
                 if self.gametime - self.enemy_last_spawn > 7000:
                     self.enemy_last_spawn = self.gametime
                     for _ in range(3):
-                        self.enemies.add(Elite())
+                        self.enemies.add(Elite(self.difficulty_factor))
                     for _ in range(3):
-                        self.enemies.add(Kamikaze())
+                        self.enemies.add(Kamikaze(self.difficulty_factor))
                     
                     self.wave = "WAVE 5"
             elif 100 <= self.gametime / 1000 < 120:
                 if self.gametime - self.enemy_last_spawn > 7000:
                     self.enemy_last_spawn = self.gametime
                     for _ in range(7):
-                        self.enemies.add(Kamikaze())
+                        self.enemies.add(Kamikaze(self.difficulty_factor))
                     
                     self.wave = "WAVE 6"
 
@@ -107,40 +120,37 @@ class Main():
                 if self.gametime - self.enemy_last_spawn > 7000:
                     self.enemy_last_spawn = self.gametime
                     for _ in range(5):
-                        self.enemies.add(Fighter())
+                        self.enemies.add(Fighter(self.difficulty_factor))
                     for _ in range(2):
-                        self.enemies.add(Elite())
-                    self.enemies.add(EnemyBig())
+                        self.enemies.add(Elite(self.difficulty_factor))
+                    self.enemies.add(EnemyBig(self.difficulty_factor))
                     self.wave = "WAVE 7"
             elif 140 <= self.gametime / 1000 < 160:
                 if self.gametime - self.enemy_last_spawn > 7000:
                     self.enemy_last_spawn = self.gametime
                     for _ in range(8):
-                        self.enemies.add(Fighter())
+                        self.enemies.add(Fighter(self.difficulty_factor))
                     for _ in range(6):
-                        self.enemies.add(Elite())
+                        self.enemies.add(Elite(self.difficulty_factor))
                     for _ in range(3):
-                        self.enemies.add(Kamikaze())
+                        self.enemies.add(Kamikaze(self.difficulty_factor))
                     for _ in range(1):
-                        self.enemies.add(EnemyBig())
+                        self.enemies.add(EnemyBig(self.difficulty_factor))
                     self.wave = "WAVE 8"
-
             else:
                 if self.gametime - self.enemy_last_spawn > 10000:
                     self.enemy_last_spawn = self.gametime
-                    for _ in range(10):
-                        self.enemies.add(Fighter())
-                    for _ in range(7):
-                        self.enemies.add(Elite())
-                    for _ in range(5):
-                        self.enemies.add(Kamikaze())
-                    for _ in range(2):
-                        self.enemies.add(EnemyBig())
-
+                    for _ in range(int(10 * self.difficulty_factor["spawn"])):
+                        self.enemies.add(Fighter(self.difficulty_factor))
+                    for _ in range(int(7 * self.difficulty_factor["spawn"])):
+                        self.enemies.add(Elite(self.difficulty_factor))
+                    for _ in range(int(5 * self.difficulty_factor["spawn"])):
+                        self.enemies.add(Kamikaze(self.difficulty_factor))
+                    for _ in range(int(2 * self.difficulty_factor["spawn"])):
+                        self.enemies.add(EnemyBig(self.difficulty_factor))
                     self.wave = "ENDLESS"
 
     def draw(self, screen):
-
         if not self.dead:
             self.player.draw(screen, self.offset)
         for i in self.enemies:
@@ -240,22 +250,25 @@ class Main():
             game_state = game_over
 
     def generate_items(self):
-        if self.gametime - self.item_last_spawn > 7000:
+        if self.gametime - self.item_last_spawn > 5000:
             
             items = [Heart(self.width,self.height,self.gametime), Speed(self.width,self.height,self.gametime), Lspeed(self.width,self.height,self.gametime), Attack(self.width,self.height,self.gametime), Auto(self.width,self.height,self.gametime)]
-            weights = [0.5, 0.15, 0.15, 0.15, 0.05] 
+            weights = [0.5, 0.15, 0.15, 0.15, 0.05] if self.wave != "endless" else [0.5, 0.05, 0.05, 0.2, 0.2]
             self.items.add(random.choices(population= items, weights = weights, k=1))
             
             self.item_last_spawn = self.gametime
         
     
         if self.gametime - self.powerup_last_spawn > self.powerup_interval * 1000:
-            self.powerup_last_spawn = self.gametime
-            self.powerup_interval = random.randint(35,60)
             if self.player.weapon != 4:
+                self.powerup_last_spawn = self.gametime
+                self.powerup_interval = random.randint(35,60)
                 self.items.add(WeaponUp(self.width, self.height, self.gametime))
-            self.items.add(MissilesItem(self.width, self.height, self.gametime)) 
-            
+                self.items.add(MissilesItem(self.width, self.height, self.gametime))
+            else:
+                 self.powerup_last_spawn = self.gametime
+                 self.powerup_interval = random.randint(7,15)
+                 self.items.add(MissilesItem(self.width, self.height, self.gametime))
     def screen_shake(self):
         if self.screenshake:
             elapsed_time = self.gametime - self.shake_timer
@@ -276,7 +289,7 @@ gamemanager = GameManager()
 # Set up the window display
 screen = pygame.display.set_mode((width, height))
 buffer_screen = pygame.Surface((width, height))
-pygame.display.set_caption("Pygame Template")
+pygame.display.set_caption("Gemu")
 clock = pygame.time.Clock()
 font = pygame.font.Font("gamefont.otf", 36)
 
@@ -309,20 +322,17 @@ pygame.mixer.music.load("sounds/centraldogma.mp3")
 pygame.mixer.music.set_volume(0.4)
 pygame.mixer.music.play(-1)
 
+current_game_time = main_game.gametime
 
 # Game loop
 if __name__ == "__main__":
     while 1:
-        
         main_game.dt = clock.tick(550) / 1000
         current_time = pygame.time.get_ticks()
         if (game_state != game_paused):
-            gamemanager.gametime = current_time - (time_at_unpaused - time_at_paused)
+            gamemanager.gametime = current_time - (time_at_unpaused - time_at_paused) - (time_at_paused - current_game_time)
             main_game.gametime = gamemanager.gametime
         
-        
-
-
         # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -344,6 +354,7 @@ if __name__ == "__main__":
                         gamemanager.gametime = 0
                         time_at_unpaused = current_time
                         time_at_paused = 0
+                        current_game_time = 0
                         set_time_paused = False
                         dead_animation = False
                         del main_game
@@ -367,6 +378,7 @@ if __name__ == "__main__":
 
 
         if game_state == game_paused:
+            current_game_time = main_game.gametime
             screen.blit(background, (0,0))
             main_game.draw(screen)
             text = font.render("Game Paused! Press [ESC] to resume", True, (255,255,255))
@@ -376,6 +388,7 @@ if __name__ == "__main__":
         if game_state == game_over: 
             pygame.mixer.music.stop() 
             if not set_time_paused:
+                main_game.time_over = main_game.gametime
                 time_at_paused = current_time
                 set_time_paused = True
             main_game.explosions.update(gamemanager.gametime)
@@ -386,14 +399,17 @@ if __name__ == "__main__":
                 main_game.dead = True
                 main_game.player.kill()
                 if not dead_animation:
-                    main_game.create_explosion(main_game.player.rect.centerx, main_game.player.rect.centery)
+                    main_game.create_explosion(main_game.player.rect.centerx, main_game.player.rect.centery, small_explosion_frames, explosion_sound)
                     dead_animation = True
             if current_time - time_at_paused >= 2000:  
                 text_over = font.render("Game Over! Press [TAB] to restart", True, (255,255,255))
                 text_rect = text_over.get_rect(center=(width // 2, height // 2))
                 screen.blit(text_over, text_rect)
+                time_over = font.render(f"Time survived: {round(main_game.time_over / 1000)}s", True, (255,255,255))
+                time_rect = time_over.get_rect(center=(width // 2, height // 2 + 50))
+                screen.blit(time_over, time_rect)
 
-        text_hp = font.render("HP: " + str(main_game.player.hp), True, (255, 255, 255))
+        text_hp = font.render("HP: " + str(round(main_game.player.hp)), True, (255, 255, 255))
         text_hp_rect = text_hp.get_rect()
         text_hp_rect.topleft = (10, 10)
         screen.blit(text_hp, text_hp_rect)
@@ -403,17 +419,18 @@ if __name__ == "__main__":
         fps_rect.topright = (width - 30, 10)
         screen.blit(fps, fps_rect)
 
-        difficulty = font.render(f"Difficulty: {main_game.difficulty}", True, (255, 255, 255))
-        diff_rect = difficulty.get_rect()
-        diff_rect.topleft = (200, 10)
-        screen.blit(difficulty, diff_rect)
+        # difficulty = font.render(f"Difficulty: {main_game.difficulty}", True, (255, 255, 255))
+        # diff_rect = difficulty.get_rect()
+        # diff_rect.topleft = (200, 10)
+        # screen.blit(difficulty, diff_rect)
 
         level = font.render(f"Level: {main_game.wave}", True, (255, 255, 255))
         level_rect = level.get_rect()
         level_rect.topleft = (550, 10)
         screen.blit(level, level_rect)
         
-        
+        # print(f"gametime: {gamemanager.gametime}, current time:{current_time}, paused:{time_at_paused}, unpaused:{time_at_unpaused}")
+        # print(f"atk: {main_game.player.atk}, matk:{main_game.player.matk}")
         pygame.display.flip()
             
             

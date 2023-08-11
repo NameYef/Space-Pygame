@@ -67,14 +67,14 @@ class Player(pygame.sprite.Sprite):
         self.mspeed = 1.5 
         self.maxlspeed = 12 
         self.maxmspeed = 5 
-        self.hp = 100
-        self.maxhp = 200
+        self.hp = 1
+        self.maxhp = 1000
         self.atk = 1
         self.matk = 10
-        self.maxatk = 10
+        self.maxatk = 15
         self.shoot_speed = 200
-        self.max_shoot_speed = 75
-        self.missile_cooldown = 2000
+        self.max_shoot_speed = 30
+        self.missile_cooldown = 1000
         self.auto_attack = False
 
     def update(self,width,height, gametime, dt, target_fps, missile_explosion):
@@ -144,7 +144,7 @@ class Player(pygame.sprite.Sprite):
             self.laser_fired = False
         
         if keys[pygame.K_LSHIFT] and self.missiles_no != 0 and (not self.missile_fired):
-            self.matk = self.atk * 10
+            self.matk = self.atk * 15
             self.missiles_no -= 1
             self.last_missile_shoot = gametime
             self.missile_fired = True

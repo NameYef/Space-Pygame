@@ -31,7 +31,7 @@ class Item(pygame.sprite.Sprite):
         else:
             self.image = self.item_frames[self.frame_index]
         
-        if gametime - self.spawn_time > 8000:
+        if gametime - self.spawn_time > 12000:
             self.kill()
 
     def draw(self, screen):
