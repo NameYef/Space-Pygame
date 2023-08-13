@@ -67,8 +67,8 @@ class Player(pygame.sprite.Sprite):
         self.mspeed = 1.5 
         self.maxlspeed = 12 
         self.maxmspeed = 5 
-        self.hp = 1
-        self.maxhp = 1000
+        self.hp = 100
+        self.maxhp = 200
         self.atk = 1
         self.matk = 10
         self.maxatk = 15

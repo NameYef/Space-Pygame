@@ -55,8 +55,6 @@ class Main():
 
     def generate_enemy(self):
     
-        
-        
         if self.difficulty == "EASY":
             if self.wave == "ENDLESS":
                 if self.gametime - self.difficulty_up >= 9000:
@@ -64,8 +62,8 @@ class Main():
                     self.difficulty_factor["speed"] += 0.005
                     self.difficulty_factor["lspeed"] += 0.0025
                     self.difficulty_factor["shoot_speed"] -= 0.015
-                    self.difficulty_factor["hp"] += 0.02
-                    self.difficulty_factor["atk"] += 0.02
+                    self.difficulty_factor["hp"] += 0.05
+                    self.difficulty_factor["atk"] += 0.05
                     self.difficulty_factor["spawn"] += 0.05
                     # print(self.difficulty_factor) 
             if self.gametime / 1000 < 20:
@@ -253,7 +251,7 @@ class Main():
         if self.gametime - self.item_last_spawn > 5000:
             
             items = [Heart(self.width,self.height,self.gametime), Speed(self.width,self.height,self.gametime), Lspeed(self.width,self.height,self.gametime), Attack(self.width,self.height,self.gametime), Auto(self.width,self.height,self.gametime)]
-            weights = [0.5, 0.15, 0.15, 0.15, 0.05] if self.wave != "endless" else [0.5, 0.05, 0.05, 0.2, 0.2]
+            weights = [0.5, 0.15, 0.15, 0.15, 0.05] if self.wave != "ENDLESS" else [0.55, 0.1, 0.1, 0.15, 0.1]
             self.items.add(random.choices(population= items, weights = weights, k=1))
             
             self.item_last_spawn = self.gametime
@@ -262,7 +260,7 @@ class Main():
         if self.gametime - self.powerup_last_spawn > self.powerup_interval * 1000:
             if self.player.weapon != 4:
                 self.powerup_last_spawn = self.gametime
-                self.powerup_interval = random.randint(35,60)
+                self.powerup_interval = random.randint(45,70)
                 self.items.add(WeaponUp(self.width, self.height, self.gametime))
                 self.items.add(MissilesItem(self.width, self.height, self.gametime))
             else:
@@ -428,6 +426,11 @@ if __name__ == "__main__":
         level_rect = level.get_rect()
         level_rect.topleft = (550, 10)
         screen.blit(level, level_rect)
+
+        missile_no = font.render(f"missile: {main_game.player.missiles_no}", True, (255, 255, 255))
+        missile_no_rect = missile_no.get_rect()
+        missile_no_rect.topleft = (200, 10)
+        screen.blit(missile_no, missile_no_rect)
         
         # print(f"gametime: {gamemanager.gametime}, current time:{current_time}, paused:{time_at_paused}, unpaused:{time_at_unpaused}")
         # print(f"atk: {main_game.player.atk}, matk:{main_game.player.matk}")
