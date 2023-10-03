@@ -11,6 +11,8 @@ Can be played using one hand only
 WASD to move
 Spacebar to shoot
 LShift to fire missile
+ESC to pause
+B to toggle autofire (only when autofire is activated)
 
 ## Items
 * +HP
