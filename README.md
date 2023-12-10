@@ -7,7 +7,8 @@ Can be played using one hand only
 
 ## Requirements
 * Python 3.10 or above recommended
-* have pygame installed ("pip install pygame" in a venv)
+* have pygame installed (run `pip install pygame` in terminal)
+* run game.py
 
 ## How to play
 - WASD to move
